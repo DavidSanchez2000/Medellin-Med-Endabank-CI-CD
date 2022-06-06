@@ -42,7 +42,14 @@ pipeline {
         }
       }
     }
-
+    stage('Deployment') {
+      steps{
+          sshagent(['sshk8s']) {
+            sh "ssh -o StrictHostKeyChecking=no -l  davidalejandro_sanchezarias 10.0.1.6 'docker pull davidsanchez21/endabank:latest' "
+            sh "ssh -o StrictHostKeyChecking=no -l  davidalejandro_sanchezarias 10.0.1.6 'docker run --env-file ./.env -d -p 8081:8080 davidsanchez21/endabank:latest' "       
+          }        
+      }
+    }    
   }
 
 }
