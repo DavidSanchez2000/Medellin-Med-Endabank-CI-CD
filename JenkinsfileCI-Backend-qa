@@ -26,7 +26,13 @@ pipeline {
                 echo "The current Build number is ${BUILD_NUMBER}"
             }
         }
-
+         stage('Sonar Tests') {
+            steps{
+                withCredentials([string(credentialsId: 'sonar_token', variable: 'SECRET')]) {
+                    sh'docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.8.5-openjdk-17 mvn clean install jacoco:prepare-agent test jacoco:report verify sonar:sonar -Dsonar.host.url=http://34.136.34.58:9000/ -Dsonar.login=${SECRET} -Dsonar.projectKey=sonarqa -Dsonar.coverage.jacoco.xmlReportPaths=/target/site/jacoco/jacoco.xml -Dsonar.java.binaries=. -D sonar.java.source=17'
+                }
+            }
+        }
         stage('Pushing Image') {
             environment {
                     registry = 'davidsanchez21/endabank-qa'
