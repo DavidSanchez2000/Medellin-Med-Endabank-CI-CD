@@ -1,0 +1,43 @@
+pipeline {
+
+  agent any
+
+  stages {
+        stage('Checkout Source') {
+            steps {
+                git url: 'https://github.com/alejosuaza1022/endabank-backend.git', branch: 'development'
+            }
+        }
+        stage('Sonar Tests') {
+            steps{
+               // sh 'docker run hello-world'
+              //  sh'docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.8.5-openjdk-17 mvn clean install test '
+                sh'docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.8.5-openjdk-17 mvn clean install jacoco:prepare-agent test jacoco:report verify sonar:sonar -Dsonar.host.url=http://34.136.34.58:9000/ -Dsonar.login=admin -Dsonar.password=SonnarQubeservice_ -Dsonar.projectKey=sonarqubetest -Dsonar.coverage.jacoco.xmlReportPaths=/target/site/jacoco/jacoco.xml -Dsonar.java.binaries=. -D sonar.java.source=17'
+                /*
+                script{
+                    def scannerHome = tool 'sonarqube';
+                    withSonarQubeEnv(installationName: 'sonarqube') {
+                        //sh'docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.8.5-openjdk-17 mvn clean install jacoco:prepare-agent test jacoco:report verify sonar:sonar  -Dsonar.host.url=http://34.132.7.13:9000/ -Dsonar.coverage.jacoco.xmlReportPaths=/target/site/jacoco/jacoco.xml'
+                        sh "${scannerHome}/bin/sonar-scanner \
+                          -D sonar.login=admin \
+                          -D sonar.sources=. \
+                          -D sonar.password=SonnarQubeservice_ \
+                          -D sonar.projectKey=sonarqubetest \
+                          -D sonar.java.binaries=.\
+                          -D sonar.exclusions=src/test/ \
+                          -D sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                          -D sonar.host.url=http://34.136.34.58:9000/"
+                        sh 'ls'
+                        //sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                        //sh 'mvn clean install jacoco:prepare-agent test jacoco:report verify sonar:sonar'
+                    }
+                    
+                }
+                */
+            }
+        }
+    
+    }
+
+}
+
